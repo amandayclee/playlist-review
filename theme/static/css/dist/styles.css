@@ -1016,6 +1016,25 @@ select {
   color: rgb(79 70 229 / var(--tw-text-opacity));
 }
 
+.text-\[DB4A2B\] {
+  color: DB4A2B;
+}
+
+.text-\[\#DB4A2B\] {
+  --tw-text-opacity: 1;
+  color: rgb(219 74 43 / var(--tw-text-opacity));
+}
+
+.text-\[\#db4A2B\] {
+  --tw-text-opacity: 1;
+  color: rgb(219 74 43 / var(--tw-text-opacity));
+}
+
+.text-\[\#db4a2b\] {
+  --tw-text-opacity: 1;
+  color: rgb(219 74 43 / var(--tw-text-opacity));
+}
+
 .hover\:bg-gray-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(55 65 81 / var(--tw-bg-opacity));
