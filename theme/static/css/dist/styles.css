@@ -790,6 +790,10 @@ select {
   height: 2rem;
 }
 
+.h-20 {
+  height: 5rem;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -824,6 +828,10 @@ select {
 
 .justify-end {
   justify-content: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
 }
 
 .justify-between {
@@ -880,6 +888,16 @@ select {
 .bg-\[\#262626\] {
   --tw-bg-opacity: 1;
   background-color: rgb(38 38 38 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#e4e2dd\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 226 221 / var(--tw-bg-opacity));
 }
 
 .bg-\[url\(\'\/img\/hero-pattern\.svg\'\)\] {
@@ -954,6 +972,11 @@ select {
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 .font-extrabold {
