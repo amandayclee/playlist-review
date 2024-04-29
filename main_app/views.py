@@ -23,3 +23,6 @@ class PlaylistCreate(CreateView):
     model = Playlist
     fields = ['name', 'description']
     
+class PlaylistDelete(DeleteView):
+    model = Playlist
+    success_url = '/playlists'
