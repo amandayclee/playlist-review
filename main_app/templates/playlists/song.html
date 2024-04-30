@@ -14,14 +14,22 @@
     </div>
 
     <div class="sm:text-center lg:text-left">
-        <input class="mt-10 border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
-            type="search" name="search" placeholder="Search...">
-        <button type="submit" class="text-#262626 bg-[#db4a2b] px-3 py-2 rounded-md text-sm font-medium">Submit</button>
+      <form action="" method="POST">
+        {% csrf_token %}
+          <input class="mt-10 border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+              type="search" name="search" placeholder="Search...">
+          <button type="submit" class="text-#262626 bg-[#db4a2b] px-3 py-2 rounded-md text-sm font-medium">Submit</button>
+      </form>
     </div>
 
     <div class="mt-10 sm:text-center lg:text-left">
         <h2 class="text-2xl font-bold mb-4">Search Results</h2>
         <div class="overflow-x-auto">
+        {% if search_results|length == 0 %}
+          <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+            Search your fav songs!
+          </p>
+        {% else %}
           <table class="min-w-full divide-y divide-gray-200 table-auto">
             <thead class="bg-gray-50">
               <tr>
@@ -34,20 +42,23 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+              {% for search_result in search_results%}
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <img src="https://via.placeholder.com/50" alt="Album Cover" class="h-10 w-10 rounded-full">
+                <td class="px-6 py-4 whitespace-nowrap flex justify-center items-center">
+                  <img src="{{ search_result.album.images.1.url }}" alt="Album Cover" class="h-10 w-10 rounded-full">
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Song Title</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">Artist Name</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">Album Name</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">3:45</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">2022</td>
+                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ search_result.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ search_result.artists.0.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ search_result.album.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ search_result.formatted_duration }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ search_result.album.release_year }}</td>
               </tr>
+              {% endfor %}
               <!-- Add more rows as needed -->
             </tbody>
           </table>
-        </div>
+        {% endif %}
+      </div>
     </div>
 </main>
 {% endblock %}

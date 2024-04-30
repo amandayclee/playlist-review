@@ -4,6 +4,12 @@ from django.urls import reverse
 # Create your models here.
 class Song(models.Model):
     name = models.CharField(max_length=100)
+    artists = models.CharField(max_length=100)
+    album = models.CharField(max_length=100)
+    spotify_id = models.CharField(max_length=100)
+    album_cover = models.CharField(max_length=200) # album image [1]
+    release_date = models.DateField() # album release_date
+    duration_ms = models.IntegerField()
     
     def __str__(self):
         return self.name
