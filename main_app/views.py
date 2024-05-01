@@ -1,5 +1,5 @@
 from django.forms import BaseModelForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Playlist
@@ -55,6 +55,11 @@ def playlists_detail(request, playlist_id):
     playlist = Playlist.objects.get(id=playlist_id)
     return render(request, 'playlists/detail.html', { 'playlist': playlist })
 
+def playlist_songsaving(request, playlist_id):
+    print(request.body)
+    response_data = {'message': 'Added to playlist successfully'}
+    return JsonResponse(response_data)
+
 def song(request):
     song_kw = request.POST.get("search", "")
     search_results = []
@@ -70,7 +75,10 @@ def song(request):
         result['formatted_duration'] = f"{hours:02}:{minutes:02}:{seconds:02}"
         result['album']['release_year'] = result['album']['release_date'][:4]
         
-    return render(request, 'playlists/song.html', { 'search_results': search_results })
+    playlists = Playlist.objects.all()
+    return render(request, 'playlists/song.html', {
+        'search_results': search_results,
+        'playlists': playlists })
 
 class PlaylistCreate(CreateView):
     model = Playlist
