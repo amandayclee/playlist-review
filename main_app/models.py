@@ -9,8 +9,8 @@ class Song(models.Model):
     album = models.CharField(max_length=100)
     spotify_id = models.CharField(max_length=100)
     album_cover = models.CharField(max_length=200) # album image [1]
-    release_date = models.DateField() # album release_date
-    duration_ms = models.IntegerField()
+    release_year = models.IntegerField() # album release_date
+    formatted_duration = models.CharField(max_length=100)
     
     def __str__(self):
         return self.name

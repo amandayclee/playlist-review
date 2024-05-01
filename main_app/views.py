@@ -2,10 +2,15 @@ from django.forms import BaseModelForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
 from .models import Playlist, Song
 from requests import post, get
 import requests, os, base64, json
 from dotenv import load_dotenv
+
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '..', 'playlistreivew', '.env')
 load_dotenv(dotenv_path)
@@ -63,7 +68,6 @@ def get_song_detail(token, song_id):
 def home(request):
     return render(request, 'home.html')
 
-
 def playlists_index(request):
     playlists = Playlist.objects.all()
     return render(request, 'playlists/index.html', { 'playlists': playlists })
@@ -72,20 +76,31 @@ def playlists_detail(request, playlist_id):
     playlist = Playlist.objects.get(id=playlist_id)
     return render(request, 'playlists/detail.html', { 'playlist': playlist })
 
+@login_required
+def user_playlists(request):
+    playlist = Playlist.objects.filter(user=request.user)
+    return render(request, 'playlists/user_playlists.html', { 'playlists': playlist })
+
+@login_required
 def playlist_songsaving(request, playlist_id):
     playlist = Playlist.objects.get(id=playlist_id)
     request_body = json.loads(request.body.decode('utf-8'))
     if not Song.objects.filter(spotify_id=request_body['song_id']).exists():
         detail = get_song_detail(token, request_body['song_id'])
-        print(detail)
+        total_seconds = detail['duration_ms'] // 1000
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
+        detail['formatted_duration'] = f"{hours:02}:{minutes:02}:{seconds:02}"
+        detail['album']['release_year'] = detail['album']['release_date'][:4]
         song = Song.objects.create(
             name=detail['name'],
             artists=detail['artists'][0]['name'],
             album=detail['album']['name'],
             spotify_id=detail['id'],
             album_cover=detail['album']['images'][1]['url'],
-            release_date=detail['album']['release_date'],
-            duration_ms=detail['duration_ms']
+            release_year=detail['album']['release_year'],
+            formatted_duration=detail['formatted_duration']
         )
         song.save()
     else:
@@ -94,6 +109,7 @@ def playlist_songsaving(request, playlist_id):
     response_data = {'message': f"{song.name} added to playlist successfully"}
     return JsonResponse(response_data)
 
+@login_required
 def songs(request):
     song_kw = request.POST.get("search", "")
     search_results = []
@@ -113,6 +129,7 @@ def songs(request):
         'search_results': search_results,
         'playlists': playlists })
 
+@login_required
 def song_delete(request, playlist_id, spotify_id):
     song = Song.objects.get(spotify_id=spotify_id)
     playlist = Playlist.objects.get(id=playlist_id)
@@ -120,14 +137,36 @@ def song_delete(request, playlist_id, spotify_id):
     return redirect('detail', playlist_id=playlist.id)
     
 
-class PlaylistCreate(CreateView):
+class PlaylistCreate(LoginRequiredMixin, CreateView):
     model = Playlist
     fields = ['name', 'description']
     
-class PlaylistUpdate(UpdateView):
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+        
+    
+class PlaylistUpdate(LoginRequiredMixin, UpdateView):
     model = Playlist
     fields = ['name', 'description']  
     
-class PlaylistDelete(DeleteView):
+class PlaylistDelete(LoginRequiredMixin, DeleteView):
     model = Playlist
     success_url = '/playlists'
+    
+def signup(request):
+    error_message = ''
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+        else:
+            error_message = 'Invalid sign up - try again'
+    form = UserCreationForm()
+    context = {
+        'form': form,
+        'error_message': error_message
+    }
+    return render(request, 'registration/signup.html', context)
