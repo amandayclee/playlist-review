@@ -44,7 +44,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              {% for search_result in search_results%}
+              {% for search_result in search_results %}
               <tr>
                 <td class="px-6 py-4 whitespace-nowrap flex justify-center items-center">
                   <img src="{{ search_result.album.images.1.url }}" alt="Album Cover" class="h-10 w-10 rounded-full">
@@ -63,7 +63,7 @@
                           <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDelayButton">
                             {% for playlist in playlists %}
                               <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="saveToPlaylist('{{ search_result.id }}', {{ playlist.id }}, {{ forloop.counter }})">{{ playlist.name }}</a>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="saveToPlaylist('{{ search_result.id }}', {{ playlist.id }}, {{ forloop.parentloop.counter }})">{{ playlist.name }}</a>
                               </li>
                             {% endfor %}
                           </ul>
@@ -82,11 +82,16 @@
 
 <script>
   function toggleDropdown(index) {
-      const dropdown = document.getElementById("dropdownDelay" + index);
-      dropdown.classList.toggle("hidden");
-  }
+    const dropdown = document.getElementById("dropdownDelay" + index);
+    if (dropdown.classList.contains("hidden")) {
+        dropdown.classList.remove("hidden");
+    } else {
+        dropdown.classList.add("hidden");
+    }
+}
 
   function saveToPlaylist(song_id, playlist_id, index) {
+    console.log(index)
     fetch(`/playlists/${playlist_id}/save`, {
         method: 'POST',
         headers: {

@@ -1,6 +1,6 @@
 from django.forms import BaseModelForm
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Playlist, Song
 from requests import post, get
@@ -94,7 +94,7 @@ def playlist_songsaving(request, playlist_id):
     response_data = {'message': f"{song.name} added to playlist successfully"}
     return JsonResponse(response_data)
 
-def song(request):
+def songs(request):
     song_kw = request.POST.get("search", "")
     search_results = []
     if song_kw:
@@ -112,6 +112,13 @@ def song(request):
     return render(request, 'playlists/song.html', {
         'search_results': search_results,
         'playlists': playlists })
+
+def song_delete(request, playlist_id, spotify_id):
+    song = Song.objects.get(spotify_id=spotify_id)
+    playlist = Playlist.objects.get(id=playlist_id)
+    playlist.songs.remove(song)
+    return redirect('detail', playlist_id=playlist.id)
+    
 
 class PlaylistCreate(CreateView):
     model = Playlist

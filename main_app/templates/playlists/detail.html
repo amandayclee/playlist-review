@@ -27,19 +27,25 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Album</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Length</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Release Year</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remove from Playlist</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+              {% for song in playlist.songs.all %}
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <img src="https://via.placeholder.com/50" alt="Album Cover" class="h-10 w-10 rounded-full">
+                <td class="px-6 py-4 whitespace-nowrap flex justify-center items-center">
+                  <img src="{{ song.album_cover }}" alt="Album Cover" class="h-10 w-10 rounded-full">
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Song Title</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">Artist Name</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">Album Name</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">3:45</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">2022</td>
+                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ song.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.artists }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.album }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.duration_ms }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.release_date }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500 w-64">
+                  <a href="{% url 'songs_delete' playlist.id song.spotify_id %}" class="text-#262626 bg-[#db4a2b] mx-1 px-3 py-2 rounded-md text-sm font-medium">Delete</a>
+                </td>
               </tr>
+              {% endfor %}
               <!-- Add more rows as needed -->
             </tbody>
           </table>
