@@ -41,8 +41,8 @@
                 <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.album }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.duration_ms }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ song.release_date }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500 w-64">
-                  <a href="{% url 'songs_delete' playlist.id song.spotify_id %}" class="text-#262626 bg-[#db4a2b] mx-1 px-3 py-2 rounded-md text-sm font-medium">Delete</a>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <a href="{% url 'songs_delete' playlist.id song.spotify_id %}" class="text-#262626 bg-[#db4a2b] px-3 py-2 rounded-md text-sm font-medium">Delete</a>
                 </td>
               </tr>
               {% endfor %}
