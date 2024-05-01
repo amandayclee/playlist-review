@@ -2,7 +2,7 @@ from django.forms import BaseModelForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Playlist
+from .models import Playlist, Song
 from requests import post, get
 import requests, os, base64, json
 from dotenv import load_dotenv
@@ -30,6 +30,8 @@ def get_token():
     
     return token
 
+token = get_token()
+
 def get_auth_header(token):
     return { "Authorization": "Bearer " + token}
 
@@ -43,9 +45,24 @@ def search_for_song(token, song_kw):
     json_result = json.loads(result.content)["tracks"]["items"]
     return json_result
 
+def get_song_detail(token, song_id):
+    url = f"https://api.spotify.com/v1/tracks/{song_id}??market=US"
+    headers = get_auth_header(token)
+    result = get(url, headers=headers)
+    json_result = json.loads(result.content)
+    # total_seconds = json_result['duration_ms'] // 1000
+    # hours = total_seconds // 3600
+    # minutes = (total_seconds % 3600) // 60
+    # seconds = total_seconds % 60
+    # json_result['formatted_duration'] = f"{hours:02}:{minutes:02}:{seconds:02}"
+    # json_result['album']['release_year'] = json_result['album']['release_date'][:4]
+    
+    return json_result
+
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
+
 
 def playlists_index(request):
     playlists = Playlist.objects.all()
@@ -56,15 +73,31 @@ def playlists_detail(request, playlist_id):
     return render(request, 'playlists/detail.html', { 'playlist': playlist })
 
 def playlist_songsaving(request, playlist_id):
-    print(request.body)
-    response_data = {'message': 'Added to playlist successfully'}
+    playlist = Playlist.objects.get(id=playlist_id)
+    request_body = json.loads(request.body.decode('utf-8'))
+    if not Song.objects.filter(spotify_id=request_body['song_id']).exists():
+        detail = get_song_detail(token, request_body['song_id'])
+        print(detail)
+        song = Song.objects.create(
+            name=detail['name'],
+            artists=detail['artists'][0]['name'],
+            album=detail['album']['name'],
+            spotify_id=detail['id'],
+            album_cover=detail['album']['images'][1]['url'],
+            release_date=detail['album']['release_date'],
+            duration_ms=detail['duration_ms']
+        )
+        song.save()
+    else:
+        song = Song.objects.get(spotify_id=request_body['song_id'])
+    playlist.songs.add(song)
+    response_data = {'message': f"{song.name} added to playlist successfully"}
     return JsonResponse(response_data)
 
 def song(request):
     song_kw = request.POST.get("search", "")
     search_results = []
     if song_kw:
-        token = get_token()
         search_results = search_for_song(token, song_kw)
         
     for result in search_results:
