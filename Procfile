@@ -1,1 +1,1 @@
-web: gunicorn django_project.wsgi:application --log-file - --log-level debug
+web: gunicorn playlistreivew.wsgi:application --log-file - --log-level debug
