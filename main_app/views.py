@@ -153,6 +153,15 @@ def add_photo(request, playlist_id):
             print(e)
     return redirect('detail', playlist_id=playlist_id)
 
+@login_required
+def delete_photo(request, playlist_id):
+    playlist = Playlist.objects.get(id=playlist_id)
+    
+    if playlist.photo_set.exists():
+        photo = playlist.photo_set.first()
+        photo.delete()
+    return redirect('playlists_update', pk=playlist_id)
+
 class PlaylistCreate(LoginRequiredMixin, CreateView):
     model = Playlist
     fields = ['name', 'description']
