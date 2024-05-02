@@ -19,10 +19,15 @@
     </div>
 
     <div class="sm:text-center lg:text-left">
-        <form class="mt-10" action="" method="POST">
+        <form class="mt-10" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <table>
                 {{ form.as_table }}
+                <tbody>
+                    <tr>
+                        <td><input type="file" name="photo-file"></td>
+                    </tr>
+                </tbody>
             </table>
             <div class="flex justify-start">
                 <input class="mt-5 text-#262626 bg-[#db4a2b] px-3 py-2 rounded-md text-sm font-medium cursor-pointer" type="submit" value="Submit">

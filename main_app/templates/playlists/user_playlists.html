@@ -16,7 +16,11 @@
             <div class="mt-10 flex justify-center items-center">
                 <card
                     class="bg-white w-full max-w-[768px] flex justify-start items-center p-8 relative max-h-40 shadow-sm rounded-md">
-                    <img src="https://a10.gaanacdn.com/gn_img/albums/P7m3GvNKqx/7m3GVZx5Kq/size_l.jpg" class="rounded-xl w-[120px] items-center">
+                    {% if playlist.photo_set.all|length > 0%}
+                        <img src="{{ playlist.photo_set.first.url }}" class="rounded-xl w-[120px] items-center">
+                    {% else %}
+                        <img src="https://www.iconsdb.com/icons/preview/light-gray/square-xxl.png" class="rounded-xl w-[120px] items-center">
+                    {% endif %}
                     <a href="{% url 'detail' playlist.id %}" class="pl-9 text-2xl font-semibold grow">
                         {{ playlist.name }} <br>
                         <span class="text-lg font-normal">{{ playlist.description }}</span>

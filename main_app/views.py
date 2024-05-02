@@ -6,9 +6,9 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
-from .models import Playlist, Song
+from .models import Playlist, Song, Photo
 from requests import post, get
-import requests, os, base64, json
+import requests, os, base64, json, uuid, boto3
 from dotenv import load_dotenv
 
 
@@ -135,7 +135,23 @@ def song_delete(request, playlist_id, spotify_id):
     playlist = Playlist.objects.get(id=playlist_id)
     playlist.songs.remove(song)
     return redirect('detail', playlist_id=playlist.id)
-    
+
+@login_required
+def add_photo(request, playlist_id):
+    photo_file = request.FILES.get('photo-file', None)
+    print(photo_file)
+    if photo_file:
+        s3 = boto3.client('s3')
+        key = f"{playlist_id}_photo" + photo_file.name[photo_file.name.rfind('.'):]
+        try:
+            bucket = os.getenv("S3_BUCKET")
+            s3.upload_fileobj(photo_file, bucket, key)
+            url = f"{os.getenv('S3_BASE_URL')}{bucket}/{key}"
+            Photo.objects.get_or_create(url=url, playlist_id=playlist_id)
+        except Exception as e:
+            print('An error occurred uploading file to S3')
+            print(e)
+    return redirect('detail', playlist_id=playlist_id)
 
 class PlaylistCreate(LoginRequiredMixin, CreateView):
     model = Playlist
@@ -143,12 +159,20 @@ class PlaylistCreate(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        add_photo(self.request, form.instance.id)
+        return response
         
     
 class PlaylistUpdate(LoginRequiredMixin, UpdateView):
     model = Playlist
     fields = ['name', 'description']  
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        response = super().form_valid(form)
+        add_photo(self.request, form.instance.id)
+        return response
     
 class PlaylistDelete(LoginRequiredMixin, DeleteView):
     model = Playlist
