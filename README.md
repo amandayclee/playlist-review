@@ -16,7 +16,7 @@ Playlist is a web application that enables users to search for music and add the
     <img src="./assets/img/user_create.png" height="300">
     <img src="./assets/img/user_add_song.png" height="300">
     <img src="./assets/img/user_playlist.png" height="300">
-    <img src="./assets/img/user_playlist_detail.png" height="300">◊
+    <img src="./assets/img/user_playlist_detail.png" height="300">
 </p>
 
 # Technologies Used
