@@ -55,12 +55,6 @@ def get_song_detail(token, song_id):
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     json_result = json.loads(result.content)
-    # total_seconds = json_result['duration_ms'] // 1000
-    # hours = total_seconds // 3600
-    # minutes = (total_seconds % 3600) // 60
-    # seconds = total_seconds % 60
-    # json_result['formatted_duration'] = f"{hours:02}:{minutes:02}:{seconds:02}"
-    # json_result['album']['release_year'] = json_result['album']['release_date'][:4]
     
     return json_result
 

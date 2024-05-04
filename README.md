@@ -28,6 +28,7 @@ Playlist is a web application that enables users to search for music and add the
 - Heroku
 
 # Project
+<p><img src="./assets/img/app_architecture.png" height="300"></p>
 This project constitutes a full-stack application built on the Django framework, integrating built-in authentication and views for CRUD operations. Utilizing PostgreSQL as the database, it manages entities such as users, songs, and playlists. Furthermore, the application enables users to upload playlist covers to AWS S3. Leveraging the Spotify API, insights and resources from Akamai Developer greatly influenced its implementation, and I extend my gratitude to the content creators for their invaluable contributions to my learning journey. Tailwind CSS was employed for styling, supplemented by various components sourced from online templates, with design inspirations also drawn from Rolsolana Fursa on Canva. The application has been successfully deployed on Heroku.
 
 # Next Steps
